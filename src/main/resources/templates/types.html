@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>types</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+  <link rel="stylesheet" href="../static/css/me.css" th:href="@{/css/me.css}">
+</head>
+<body>
+<!--导航-->
+<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small">
+  <div class="ui container">
+    <div class="ui inverted secondary stackable menu">
+      <h1 class="ui teal header item">Blog</h1>
+      <a href="/" class=" m-item item m-mobile-hide">Home</a>
+      <a href="/type" class="active m-item item m-mobile-hide">Type</a>
+      <a href="/label" class=" m-item item m-mobile-hide">Label</a>
+      <a href="/about" class="m-item item m-mobile-hide">About</a>
+      <div class="right m-item item m-mobile-hide">
+        <form name="blogSearch" action="#" th:action="@{/blog/search}" target="_blank" method="post">
+          <div class="ui icon inverted transparent input m-margin-tb-tiny">
+            <input type="text" placeholder="Search...." name="query" id="searchBlog">
+          </div>
+          <i class="search link icon" onclick="searchSubmit()"></i>
+        </form>
+      </div>
+    </div>
+  </div>
+  <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+    <i class="sidebar icon"></i>
+  </a>
+</nav>
+<!--中间内容-->
+<div class="m-container-small m-padded-tb-big">
+  <div class="ui container">
+    <!--header-->
+    <div class="ui top attached segment">
+      <div class="ui middle aligned two column grid">
+        <div class="column">
+          <h2 class="ui teal header">View by type</h2>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" name="index" id="index" th:attr="index=${typeIndex}">
+    <div class="ui attached segment m-padded-tb-large" id="typeColor">
+      <div class="ui labeled button m-margin-tb-tiny" th:each="type : ${types}" >
+        <input type="hidden" name="page">
+        <input name="typeId" th:attr="value=${typeId}" type="hidden" id="typeId" >
+        <button th:value="${type.id}" th:attr="index=${type.index}" onclick="selectType(this)" class="ui basic button type-select-btn" ><span  th:text="${type.name}">type name</span></button>
+        <p class="ui basic left pointing label" th:text="${type.countpb}">24</p>
+      </div>
+    </div>
+  </div>
+  <div id="blogList" th:fragment="blogList">
+    <div class="ui top attached teal segment">
+      <div class="ui padded vertical segment m-padded-tb-large m-mobile-lr-clear"
+           th:each="blog : ${page.content}">
+        <div class="ui mobile reversed stackable grid">
+          <div class="eleven wide column">
+            <h3 class="ui header">
+              <a href="#" class="m-black" th:text="${blog.title}" th:href="@{/blog/{id}(id=${blog.id})}">my
+                first blog</a></h3>
+            <p class="m-text" th:text="${blog.description}"></p>
+            <div class="ui stackable grid">
+              <div class="eleven wide column">
+                <div class="ui mini horizontal link list">
+                  <div class="item">
+                    <img src="" th:src="@{${blog.user.headPointUrl}}" alt=""
+                         class="ui avatar image">
+                    <div class="content"><a href="#" class="header" th:text="${blog.user.username}">hua</a>
+                    </div>
+                  </div>
+                  <div class="item">
+                    <i class="calendar icon"></i><span
+                          th:text="${#dates.format(blog.creationTime,'yyyy-MM-dd')}">2019-10-01</span>
+                  </div>
+                  <div class="item">
+                    <i class="eye icon"></i><span th:text="${blog.viewedCount}">2342</span>
+                  </div>
+                </div>
+              </div>
+              <div class="right aligned five wide column">
+                <p  target="_blank"
+                    class="ui teal basic type m-padded-tiny m-text-thin" th:text="${blog.tag}">tag</p>
+              </div>
+            </div>
+          </div>
+          <div class="five wide column">
+            <a href="#" target="_blank" th:href="@{/blog/{id}(id=${blog.id})}">
+              <img src="" th:src="@{${blog.firstPictureUrl}}" alt="" class="ui rounded image">
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="ui bottom attached segment">
+      <div class="ui middle aligned two column grid" th:if="${page.totalPages}>1">
+        <div class="column">
+          <button onclick="page(this)" th:attr="value=${page.number}-1" class="ui mini teal basic button"
+                  th:unless="${page.first}">
+            <i class="angle double left icon"></i>
+          </button>
+        </div>
+        <div class="right aligned column">
+          <button class="ui mini teal basic button" onclick="page(this)" th:attr="value=${page.number}+1"
+                  th:unless="${page.last}">
+            <i class="angle double right icon"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br>
+<br>
+<!--底部footer-->
+<footer class="ui inverted vertical segment m-padded-tb-massive">
+  <div class="ui center aligned container">
+    <div class="ui inverted divided stackable grid">
+      <div class="three wide column">
+        <div class="ui inverted link list">
+          <div class="item">
+            <img src="../static/images/wechat.jpg" th:src="@{/images/wechat.jpg}" class="ui rounded image"
+                 alt="" style="width: 110px">
+          </div>
+        </div>
+      </div>
+      <div class="three wide column">
+        <h4 class="ui inverted header m-text-thin m-text-spaced ">new blog</h4>
+        <div class="ui inverted link list">
+          <a href="#" class="item m-text-thin">my first blog</a>
+        </div>
+      </div>
+      <div class="three wide column">
+        <h4 class="ui inverted header m-text-thin m-text-spaced ">contact me</h4>
+        <div class="ui inverted link list">
+          <a href="#" class="item m-text-thin">Email：402166081@qq.com</a>
+          <a href="#" class="item m-text-thin">QQ：402166081</a>
+        </div>
+      </div>
+      <div class="seven wide column">
+        <h4 class="ui inverted header m-text-thin m-text-spaced ">Blog</h4>
+        <p class="m-text-thin m-text-spaced m-opacity-mini">This is my personal blog</p>
+      </div>
+    </div>
+    <div class="ui inverted section divider"></div>
+    <p class="m-text-thin m-text-spaced m-opacity-tiny">Copyright © 2018 - 2019 </p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+    addColor($('#index').attr('index'));
+  });
+
+  function searchSubmit(){
+    var t = $('#searchBlog').val();
+    if (t==''||t==undefined||t==null){
+      return false;
+    }
+    document.forms['blogSearch'].submit();
+  }
+
+  $('.menu.toggle').click(function () {
+    $('.m-item').toggleClass('m-mobile-hide');
+  });
+  function addColor(index){
+        $('#typeColor').children().children()[index*4-2].className += ' teal';
+        $('#typeColor').children().children()[index*4-1].className += ' teal';
+  }
+
+  function selectType(obj) {
+    addColor($(obj).attr('index'));
+    $("[name='typeId']").val($(obj).val());
+    $('#blogList').load("/ajaxtype",{
+      'page' : 0,
+      'id' : $(obj).val()
+    });
+  }
+
+  function page(obj) {
+    $('#blogList').load("/ajaxtype",{
+      'page' : $(obj).val(),
+      'id' : $("[name='typeId']").val()
+    })
+  }
+</script>
+</body>
+</html>

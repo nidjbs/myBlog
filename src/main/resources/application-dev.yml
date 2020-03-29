@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/blog?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: 123456
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    timeout: 6000
+    jedis:
+      pool:
+        max-active: 200
+        min-idle: 50
+        max-wait: 1000
+        max-idle: 100
+  cache:
+    redis:
+      time-to-live: 1d   #key存活时间
+
+
+logging:
+  level:
+    root: info
+    com.hyl: debug
+  file:
+    path: log/blog-dev
+server:
+  port: 80

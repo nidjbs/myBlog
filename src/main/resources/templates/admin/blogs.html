@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+  <link rel="stylesheet" href="../../static/css/me.css" th:href="@{/css/me.css}">
+</head>
+<body>
+
+  <!--导航-->
+  <nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" >
+    <div class="ui container">
+      <div class="ui inverted secondary stackable menu">
+        <h2 class="ui teal header item">Blog Admin</h2>
+        <a href="#" th:href="@{/admin/blogs}" class="active m-item item m-mobile-hide">Blog</a>
+        <a href="#" th:href="@{/admin/types}"  class="m-item item m-mobile-hide">Type</a>
+        <a href="#" th:href="@{/admin/labels}"  class="m-item item m-mobile-hide">Label</a>
+        <a href="#" th:href="@{/admin/archives}" class=" m-item item m-mobile-hide">Archives</a>
+        <div class="right m-item m-mobile-hide menu">
+          <div class="ui dropdown  item">
+            <div class="text">
+              <img class="ui avatar image" src="../../static/images/headPoint.jpg" th:src="@{/images/headPoint.jpg}">
+              <div th:text="${session.user.username}">username</div>
+            </div>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              <a href="#" th:href="@{/admin/logout}" class="item">logout</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+      <i class="sidebar icon"></i>
+    </a>
+  </nav>
+  <!--菜单-->
+  <div class="ui attached pointing menu">
+    <div class="ui container">
+      <div class="right menu">
+        <a href="/admin/blogs/add" class="item">publish</a>
+        <a href="/admin/blogs" class="teal active item">management</a>
+      </div>
+    </div>
+  </div>
+  <!--中间内容-->
+  <div  class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+      <!--搜索表单-->
+      <div class="ui segment form">
+        <input type="hidden" name="page" >
+        <div class="inline fields">
+          <div class="field">
+            <input type="text" th:data-value="title" id="titleName" name="title" placeholder="title">
+          </div>
+          <div class="field">
+            <div class="ui type selection dropdown">
+              <input type="hidden" name="typeName">
+              <i class="dropdown icon"></i>
+              <div class="default text">type</div>
+              <div class="menu" >
+                <div class="item" th:each="type : ${types}" th:date-value="${type.id}" th:text="${type.name}">error log</div>
+              </div>
+            </div>
+            <div id="type-clear" class="ui compact button">clear</div>
+          </div>
+          <div class="field">
+            <div class="ui checkbox">
+              <input type="checkbox" id="recommend" name="recommend" class="hidden">
+              <label for="recommend">recommended</label>
+            </div>
+          </div>
+          <div class="field">
+            <button type="button" class="ui mini teal basic button" id="search-blog-btn"><i class="search icon"></i>search</button>
+          </div>
+        </div>
+      </div>
+      <!--数据区域-->
+      <div id="blog-table">
+      <table th:fragment="blogList" class="ui celled teal table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>title</th>
+            <th>type</th>
+            <th>status</th>
+            <th>recommended</th>
+            <th>operation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="blog,iterStat : ${page.content}" >
+            <td th:text="${iterStat.count}">1</td>
+            <td th:text="${blog.title}">title</td>
+            <td th:text="${blog.type.name}">type</td>
+            <td th:text="${blog.status} ? 'publish':'draft'">yes</td>
+            <td th:text="${blog.recommend} ? 'yes':'not'">yes</td>
+            <td>
+              <a href="#" th:href="@{/admin/blogs/{id}/update(id=${blog.id})}" class="ui mini teal basic button" >update</a>
+              <a href="#" class="ui mini red basic button" th:onclick="|deleteBlog(${blog.id})|">delete</a>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="7">
+              <div class="ui mini pagination menu" th:if="${page.totalPages}>1">
+                <a onclick="page(this)" th:attr="pageNum=${page.number}-1" class="item" th:unless="${page.first}">
+                  <i class="angle double left icon"></i>
+                </a>
+                <a onclick="page(this)" th:attr="pageNum=${page.number}+1" class="item" th:unless="${page.last}">
+                  <i class="angle double right icon"></i>
+                </a>
+              </div>
+              <a href="/admin/blogs/add" class="ui right floated teal button" >add blog</a>
+            </th>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <br>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+  <script>
+    var isSearch = false;
+    $('.menu.toggle').click(function () {
+      $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+      on : 'hover'
+    });
+
+    $('#type-clear').on('click',function () {
+      $('.ui.type.dropdown').dropdown('clear');
+      $('#titleName').val("");
+    });
+
+    $('#search-blog-btn').click(function () {
+      $("[name='page']").attr('value',0);
+      isSearch = true;
+      dataLoad(isSearch);
+    });
+
+    function page(obj) {
+      $("[name='page']").attr("value",$(obj).attr("pageNum"));
+      dataLoad(isSearch);
+    }
+    //处理ajax加载提交搜索表单方法
+    function dataLoad(isSearch){
+      $("#blog-table").load("/admin/blogs/search",{
+        "title" : $("[name='title']").val(),
+        "typeName" : $("[name='typeName']").val(),
+        "recommend" : $("[name='recommend']").prop("checked"),
+        "page" : $("[name='page']").val(),
+        "isSearch" : isSearch
+      });
+    }
+    function deleteBlog(id) {
+      if(confirm('Are you sure you want to delete the blog ?')) {
+        $.post("/admin/blogs/delete",
+                {"id":id},
+                function(data){
+                  if(data =="ok"){
+                    alert("delete success！");
+                    window.location.reload(true);
+                  }else{
+                    alert(data);
+                  }
+                });
+      }
+    }
+
+  </script>
+</body>
+</html>

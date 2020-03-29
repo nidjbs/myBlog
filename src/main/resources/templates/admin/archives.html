@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>statistics</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.css">
+  <link rel="stylesheet" href="../../static/css/me.css " th:href="@{/css/me.css}">
+</head>
+<body>
+<!--导航-->
+<nav class="ui inverted attached segment m-padded-tb-mini m-shadow-small" >
+  <div class="ui container">
+    <div class="ui inverted secondary stackable menu">
+      <h2 class="ui teal header item">Blog Admin</h2>
+      <a href="#" th:href="@{/admin/blogs}" class=" m-item item m-mobile-hide">Blog</a>
+      <a href="#" th:href="@{/admin/types}"  class="m-item item m-mobile-hide">Type</a>
+      <a href="#" th:href="@{/admin/labels}"  class="m-item item m-mobile-hide">Label</a>
+      <a href="#" th:href="@{/admin/archives}" class="active m-item item m-mobile-hide">Archives</a>
+      <div class="right m-item m-mobile-hide menu">
+        <div class="ui dropdown  item">
+          <div class="text">
+            <img class="ui avatar image" src="../../static/images/headPoint.jpg" th:src="@{/images/headPoint.jpg}">
+            <div th:text="${session.user.username}">username</div>
+          </div>
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <a href="#" th:href="@{/admin/logout}" class="item">logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <a href="#" class="ui menu toggle black icon button m-right-top m-mobile-show">
+    <i class="sidebar icon"></i>
+  </a>
+</nav>
+<!--菜单-->
+<div class="ui attached pointing menu">
+  <div class="ui container">
+    <div class="right menu">
+      <a href="/admin/blogs/add" class="item">publish</a>
+      <a href="/admin/blogs" class="teal active item">management</a>
+    </div>
+  </div>
+</div>
+  <!--中间内容-->
+  <div  class="m-container-small m-padded-tb-big">
+    <div class="ui container">
+      <!--header-->
+      <div class="ui top attached padded segment">
+        <div class="ui middle aligned two column grid">
+          <div class="column">
+            <h2 class="ui teal header">Archives Blog By Year</h2>
+          </div>
+          <div class="right aligned column">
+            <span style="font-size: 18px;color: #795da3">Total Article：</span>
+            <h2 class="ui orange header m-inline-block m-text-thin" th:text="${countBlog}">1</h2>
+          </div>
+        </div>
+      </div>
+
+      <th:block th:each="item : ${archivesBlogMap}">
+      <h3 class="ui center aligned header" th:text="${item.key}">2017</h3>
+      <div class="ui fluid vertical menu">
+        <a href="#" target="_blank" class="item" th:each="blog : ${item.value}" th:href="@{/blog/{id}(id=${blog.id})}">
+          <span>
+            <i class="mini teal circle icon"></i><span th:text="${blog.title}"></span>
+            <div class="ui teal basic left pointing label m-padded-mini " th:text="${#dates.format(blog.creationTime,'MM-dd')}">09-03</div>
+          </span>
+          <div class="ui orange basic left pointing label m-padded-mini " th:text="${blog.tag}">original</div>
+        </a>
+      </div>
+      </th:block>
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/semantic-ui/2.2.4/semantic.min.js"></script>
+
+  <script>
+    $('.menu.toggle').click(function () {
+      $('.m-item').toggleClass('m-mobile-hide');
+    });
+
+    $('.ui.dropdown').dropdown({
+      on : 'hover'
+    });
+  </script>
+</body>
+</html>
