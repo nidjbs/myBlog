@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hyl.blog.dao.BlogContentRepository;
+import com.hyl.blog.exception.IllegalOperationException;
+import com.hyl.blog.pojo.Blog;
 import com.hyl.blog.pojo.BlogContent;
 
 @Service
@@ -23,7 +25,8 @@ public class BlogContentServiceImpl implements BlogContentService {
     @Transactional
     @Override
     public BlogContent save(BlogContent blogContent) {
-        blogService.saveBlog(blogContent.getBlog());
+        Blog blog = blogService.saveBlog(blogContent.getBlog());
+        if (blog == null) return null;
         return blogContentRepository.save(blogContent);
     }
 

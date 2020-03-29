@@ -40,13 +40,12 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Blog saveBlog(Blog blog) {
         if (blog.getId() != null) {//更新操作;
-            System.out.println("博客更新！");
             return updateBlog(blog, blog.getId());
         } else {//新增操作
             blog.setUpdateTime(new Date());
             blog.setViewedCount(0);
             blog.setCreationTime(new Date());
-            return blogRepository.saveAndFlush(blog);
+            return blogRepository.save(blog);
         }
     }
 

@@ -26,7 +26,7 @@ public class BlogIndexController {
     private LabelService labelService;
 
     @GetMapping("/")
-    public String index(@PageableDefault(size = 2,sort ={"viewedCount"},direction = Sort.Direction.DESC)
+    public String index(@PageableDefault(size = 12,sort ={"viewedCount"},direction = Sort.Direction.DESC)
                                     Pageable pageable,@RequestParam(required = false) Integer page,Model model){
         if(page == null){page = 0;}
         model.addAttribute("page",blogService.listBlog(pageable,page));
